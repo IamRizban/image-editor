@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">  
+        <title>Image Editor</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/cropper.css">
+        <link rel="stylesheet" href="css/main.css"> 
+        <style>
+            p{margin-bottom: 5px;}
+            hr{border: 1px dashed #000;}
+            #getCanvasDiv, #filtration_controls{border-left: 1px solid #ccc}
+            .list-group-item{padding-top: 5px; padding-bottom: 5px;}
+        </style>
+        <script>
+            function getQueryVariable(variable) {
+                var query = window.location.search.substring(1);
+                var vars = query.split("&");
+                for (var i = 0; i < vars.length; i++) {
+                    var pair = vars[i].split("=");
+                    if (pair[0] == variable) {
+                        return pair[1];
+                    }
+                }
+                return(false);
+            }
+            var site = getQueryVariable('site');
+            var aspectRatio = '';
+            if (site == 'at' || site == 'it') {
+                aspectRatio = 16 / 9;
+            }
+        </script>
+    </head>
+    <body>
+        <!-- Content -->
+        <div class="container-fluid">
+            <!-- Left & Right Divs Row -->
+            <div class="row" style="margin-bottom: 10px;">
+                <div class="col-md-9" style="display:block">
+                    <!-- Cropping Div to show Image to be cropping -->
+                    <div class="img-container" id="getCroppingDiv">
+                        <img id="image" src="images/india-today.jpg" alt="India Today Logo">
+                    </div>
+                    <!-- Canvas Div to show Image to be applied filter -->
+                    <div class="docs-cropped" id="getCanvasDiv" style="display:none;max-width: 1150px;max-height: 490px;">
+                        <div class="croppedImgDiv"></div>                        
+                    </div>
+                </div>
+                <!-- Width, Height & Preview of Image -->
+                <div class="col-md-3">                    
+                    <div class="docs-data"> 
+                        <div class="row">
+                            <div class="docs-preview clearfix">
+                                <div class="img-preview preview-lg"></div>
+                                <div class="img-preview preview-md"></div>
+                                <div class="img-preview preview-sm"></div>
+                                <div class="img-preview preview-xs"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-group input-group-sm" style="">
+                                <span class="input-group-prepend">
+                                    <label class="input-group-text" for="dataWidth"><b>Width</b></label>
+                                </span>
+                                <input type="text" class="form-control" id="dataWidth" placeholder="width">
+                                <span class="input-group-append">
+                                    <span class="input-group-text">PX</span>
+                                </span>
+                            </div>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-prepend">
+                                    <label class="input-group-text" for="dataHeight"><b>Height</b></label>
+                                </span>
+                                <input type="text" class="form-control" id="dataHeight" placeholder="height">
+                                <span class="input-group-append">
+                                    <span class="input-group-text">PX</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 20px;">
+                            <ul class="list-group">
+                                <li class="list-group-item active"><b>Instruction to use this tool</b></li>
+                                <li class="list-group-item list-group-item-secondary"><b>Step 1:</b> Upload Image</li>
+                                <li class="list-group-item list-group-item-secondary"><b>Step 2:</b> Resize using Mouse or Text Field</li>
+                                <li class="list-group-item list-group-item-secondary"><b>Step 3:</b> Set the Frame</li>
+                                <li class="list-group-item list-group-item-secondary"><b>Step 4:</b> Click on <b>Crop</b> Button</li>
+                                <li class="list-group-item list-group-item-secondary"><b>Step 5:</b> Apply filters (If required)</li>
+                                <li class="list-group-item list-group-item-secondary"><b>Step 6:</b> Download Image</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Cropping & Filtration control Row -->
+            <div class="row" style="position:absolute; bottom: 0px; width: 100%;">
+                <!-- Cropping controls -->
+                <div class="col-md-9 docs-buttons">
+                    <button type="button" class="btn btn-success" data-method="getCroppedCanvas" data-option="{ &quot;maxWidth&quot;: 4096, &quot;maxHeight&quot;: 4096 }">
+                        <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Crop">
+                            Crop
+                            <span class="fa fa-crop"></span>
+                        </span>
+                    </button> 
+                    <!-- Rotate Image controls -->                    
+                    <button type="button" class="btn btn-dark croppercontols" data-method="rotate" data-option="45">
+                        <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Rotate">
+                            <span class="fa fa-rotate-right"></span>
+                        </span>
+                    </button> 
+                    <!-- Reset Image controls -->          
+                    <button type="button" class="btn btn-dark croppercontols" data-method="reset">
+                        <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Reset">
+                            <span class="fa fa-refresh"></span>
+                        </span>
+                    </button>
+                    <!-- IPTC of image controls -->
+                    <button type="button" class="btn btn-dark" id="showMetaDataModal">
+                        <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="IPTC">
+                            <span class="fa fa-info"></span>
+                        </span>
+                    </button>
+                    <!-- Upload Image controls -->
+                    <label class="btn btn-dark btn-upload" for="inputImage">
+                        <input type="file" class="sr-only" id="inputImage" name="file" accept=".jpg,.jpeg,.png,.gif,.bmp,.tiff">
+                        <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Upload Image">
+                            Upload
+                            <span class="fa fa-2x fa-upload"></span>
+                        </span>
+                    </label>                    
+                    <!-- Black & White controls -->
+                    <label class="btn btn-dark filtercontols disabled">
+                        <input type="checkbox" id="blackwhite" class="fabricCheckboxes sr-only">
+                        <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Black & White">
+                            <span class="fa fa-btc"></span>
+                        </span>
+                    </label>
+                    <!-- Brightness controls -->
+                    <label class="btn btn-dark filtercontols disabled">
+                        <input type="checkbox" id="brightness" class="fabricCheckboxes sr-only">
+                        <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Brightness">
+                            <span class="fa fa-crosshairs"></span>
+                        </span>
+                    </label>
+                    <!-- Contrast control -->
+                    <label class="btn btn-dark filtercontols disabled">
+                        <input type="checkbox" id="contrast" class="fabricCheckboxes sr-only">
+                        <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Contrast">
+                            <span class="fa fa-adjust"></span>
+                        </span>
+                    </label>
+                    <!-- Sharpen control -->
+                    <label class="btn btn-dark filtercontols disabled">
+                        <input type="checkbox" id="noise" class="fabricCheckboxes sr-only">
+                        <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Sharpen">
+                            <span class="fa fa-sort-up"></span>
+                        </span>
+                    </label>
+                    <!-- Delete control -->
+                    <button type="button" class="btn btn-dark filtercontols disabled pull-right" id="imgDelete">
+                        <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Delete">
+                            Delete
+                            <span class="fa fa-trash"></span>
+                        </span>
+                    </button>
+                    <!-- Download Image controls -->
+                    <button type="button" class="btn btn-dark filtercontols disabled pull-right" id="imgDownload">
+                        <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Download">
+                            Download
+                            <span class="fa fa-download"></span>
+                        </span>
+                    </button>                    
+                    <br>
+                    <input type="range" id="brightness-value" value="0.1" min="-1" max="1" step="0.003921" style="display:none;">
+                    <input type="range" id="contrast-value" value="0" min="-1" max="1" step="0.003921" style="display:none;">
+                    <input type="range" id="noise-value" value="100" min="0" max="1000" style="display:none;">
+                </div>                
+            </div>
+            <!-- Show IPTC & EXIf info in modal -->
+            <div class="modal fade" id="getMetaDataModal" aria-hidden="true" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">IPTC Information</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <pre id="allMetaDataSpan"></pre>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- Scripts -->
+        <script src="js/jquery-3.3.1.slim.min.js"></script>
+        <script src="js/bootstrap.bundle.min.js"></script>
+        <script src="js/cropper.js"></script>
+        <script src="js/jquery-cropper.js"></script>
+        <script src="js/fabric.js"></script>
+        <script src="js/FileSaver.min.js"></script>
+        <script src="js/canvas-toBlob.js"></script>
+        <script src="js/exif-js.js"></script>
+        <script src="js/main.js"></script>
+        <script>
+            $(function () {
+                fabric.filterBackend = fabric.initFilterBackend();
+                fabric.Object.prototype.transparentCorners = false;
+
+                var $ = function (id) {
+                    return document.getElementById(id)
+                };
+                canvas = new fabric.Canvas('canvas');
+                f = fabric.Image.filters;
+
+                canvas.on({
+                    'object:selected': function () {
+                        var filters = ['brightness', 'contrast', 'noise'];
+                        for (var i = 0; i < filters.length; i++) {
+                            $(filters[i]) && ($(filters[i]).checked = !!canvas.getActiveObject().filters[i]);
+                        }
+                    }
+                });
+
+                function applyFilter(index, filter) {
+                    var obj = canvas.getActiveObject();
+                    obj.filters[index] = filter;
+                    obj.applyFilters();
+                    canvas.renderAll();
+                }
+
+                function applyFilterValue(index, prop, value) {
+                    var obj = canvas.getActiveObject();
+                    if (obj.filters[index]) {
+                        obj.filters[index][prop] = value;
+                        obj.applyFilters();
+                        canvas.renderAll();
+                    }
+                }
+
+                $('blackwhite').onclick = function () {
+                    applyFilter(19, this.checked && new f.BlackWhite());
+                };
+                $('brightness').onclick = function () {
+                    if (document.getElementById("brightness").checked) {
+                        document.getElementById("brightness-value").style.display = 'block';
+                    } else {
+                        document.getElementById("brightness-value").style.display = 'none';
+                    }
+                    applyFilter(5, this.checked && new f.Brightness({
+                        brightness: parseFloat($('brightness-value').value)
+                    }));
+                };
+                $('brightness-value').oninput = function () {
+                    applyFilterValue(5, 'brightness', parseFloat(this.value));
+                };
+                $('contrast').onclick = function () {
+                    if (document.getElementById("contrast").checked) {
+                        document.getElementById("contrast-value").style.display = 'block';
+                    } else {
+                        document.getElementById("contrast-value").style.display = 'none';
+                    }
+                    applyFilter(6, this.checked && new f.Contrast({
+                        contrast: parseFloat($('contrast-value').value)
+                    }));
+                };
+                $('contrast-value').oninput = function () {
+                    applyFilterValue(6, 'contrast', parseFloat(this.value));
+                };
+                $('noise').onclick = function () {
+                    if (document.getElementById("noise").checked) {
+                        document.getElementById("noise-value").style.display = 'block';
+                    } else {
+                        document.getElementById("noise-value").style.display = 'none';
+                    }
+                    applyFilter(8, this.checked && new f.Noise({
+                        noise: parseInt($('noise-value').value, 10)
+                    }));
+                };
+                $('noise-value').oninput = function () {
+                    applyFilterValue(8, 'noise', parseInt(this.value, 10));
+                };
+            });
+            // save/download image
+            $('#imgDownload').click(function () {
+                if ($('#canvas').length) {
+                    canvas.discardActiveObject().renderAll();
+                    $('#canvas').get(0).toBlob(function (blob) {
+                        saveAs(blob, 'cropped.jpg');
+                    });
+                    // hide canvas div
+                    $('#getCanvasDiv').hide();
+                    // show cropper div
+                    $('#getCroppingDiv').show();
+                    // disable fabric controls
+                    $('.fabricCheckboxes').prop('disabled', true);
+                    $('.fabricCheckboxes').prop('checked', false);
+                    $('.filtercontols').addClass('disabled');
+                    // enable  cropping controls
+                    $('.croppercontols').removeClass('disabled');
+                    var $image = $('#image');
+                    var $dataHeight = $('#dataHeight');
+                    var $dataWidth = $('#dataWidth');
+                    var options = {
+                        aspectRatio: aspectRatio,
+                        preview: '.img-preview',
+                        crop: function (e) {
+                            $dataHeight.val(Math.round(e.detail.height));
+                            $dataWidth.val(Math.round(e.detail.width));
+                        },
+                        data: {
+                            width: parseInt($('#dataWidth').val()),
+                            height: parseInt($('#dataHeight').val()),
+                        }
+                    };
+                    $image.cropper('destroy').cropper(options);
+                }
+            });
+            // delete cropped image
+            $('#imgDelete').click(function () {
+                if ($('#canvas').length) {
+                    //clear canvas
+                    canvas.clear();
+                    // hide canvas div
+                    $('#getCanvasDiv').hide();
+                    // show cropper div
+                    $('#getCroppingDiv').show();
+                    // disable fabric controls
+                    $('.fabricCheckboxes').prop('disabled', true);
+                    $('.fabricCheckboxes').prop('checked', false);
+                    $('.filtercontols').addClass('disabled');
+                    // enable  cropping controls
+                    $('.croppercontols').removeClass('disabled');
+                }
+            });
+            // disable all fabric controls
+            $('.fabricCheckboxes').prop('disabled', true);
+            // active image if user clicks on any checkbox or radio button
+            $('.fabricCheckboxes').click(function () {
+                canvas.setActiveObject(canvas.item(0));
+            });
+            // Attach Button click event listener 
+            $("#showMetaDataModal").click(function () {
+                // show Modal
+                $('#getMetaDataModal').modal('show');
+            });
+        </script>
+    </body>
+</html>
