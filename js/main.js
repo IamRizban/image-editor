@@ -2,12 +2,15 @@ $(function () {
     'use strict';
     var console = window.console || {log: function () {}};
     var URL = window.URL || window.webkitURL;
+//    var actions = document.getElementById('actions');
     var $image = $('#image');
     var $dataHeight = $('#dataHeight');
     var $dataWidth = $('#dataWidth');
+    var $imgHeight = $('#imgHeight');
+    var $imgWidth = $('#imgWidth');
 
     var options = {
-        aspectRatio: aspectRatio,
+        aspectRatio: 16 / 9,
         preview: '.img-preview',
         crop: function (e) {
             $dataHeight.val(Math.round(e.detail.height));
@@ -44,7 +47,7 @@ $(function () {
     // change height & width of cropper
     $('#dataWidth, #dataHeight').keyup(function () {
         var options = {
-            aspectRatio: aspectRatio,
+            aspectRatio: 16 / 9,
             preview: '.img-preview',
             crop: function (e) {
                 $dataHeight.val(Math.round(e.detail.height));
@@ -57,6 +60,31 @@ $(function () {
         };
         $image.cropper('destroy').cropper(options);
     });
+    // change height & width of image
+//    $('#imgWidth, #imgHeight').keyup(function () {
+////        var options = {
+////            aspectRatio: 16 / 9,
+////            preview: '.img-preview',
+////            crop: function (e) {
+////                $dataHeight.val(Math.round($imgHeight.val()));
+////                $dataWidth.val(Math.round($imgWidth.val()));
+////            },
+////            data: {
+////                width: parseInt($imgWidth.val()),
+////                height: parseInt($imgHeight.val()),
+////            }
+////        };
+//
+//        $image.attr('height', parseInt($imgHeight.val()));
+//        $image.attr('width', parseInt($imgWidth.val()));
+//        // set width
+//        $('.cropper-view-box img').width(parseInt($imgWidth.val()));
+//        $('.cropper-hide').width(parseInt($imgWidth.val()));
+//        // set height
+//        $('.cropper-view-box img').height(parseInt($imgHeight.val()));
+//        $('.cropper-hide').height(parseInt($imgHeight.val()));
+////        $image.cropper('destroy').cropper(options);
+//    });
     // Buttons
     if (!$.isFunction(document.createElement('canvas').getContext)) {
         $('button[data-method="getCroppedCanvas"]').prop('disabled', true);
@@ -65,7 +93,48 @@ $(function () {
         $('button[data-method="rotate"]').prop('disabled', true);
         $('button[data-method="scale"]').prop('disabled', true);
     }
-    // Options
+
+    // Change aspect ratio
+//    $('.docs-toggles').on('change', function (event) {
+//        var e = event || window.event;
+//        var cropper = $image.data('cropper');
+//        var target = e.target || e.srcElement;
+//        var cropBoxData;
+//        var canvasData;
+//        var isCheckbox;
+//        var isRadio;
+//
+//        if (!cropper) {
+//            return;
+//        }
+//
+//        if (target.tagName.toLowerCase() === 'label') {
+//            target = target.querySelector('input');
+//        }
+//
+//        isCheckbox = target.type === 'checkbox';
+//        isRadio = target.type === 'radio';
+//
+//        if (isCheckbox || isRadio) {
+//            if (isCheckbox) {
+//                options[target.name] = target.checked;
+//                cropBoxData = cropper.getCropBoxData();
+//                canvasData = cropper.getCanvasData();
+//
+//                options.ready = function () {
+//                    console.log('ready');
+//                    cropper.setCropBoxData(cropBoxData).setCanvasData(canvasData);
+//                };
+//            } else {
+//                options[target.name] = target.value;
+//                options.ready = function () {
+//                    console.log('ready');
+//                };
+//            }
+//            // Reinitialize
+//            $image.cropper('destroy').cropper(options);
+//        }
+//    });
     $('.docs-toggles').on('change', 'input', function () {
         var $this = $(this);
         var name = $this.attr('name');
@@ -88,6 +157,7 @@ $(function () {
         }
         $image.cropper('destroy').cropper(options);
     });
+
     // Methods
     $('.docs-buttons').on('click', '[data-method]', function () {
         var $this = $(this);
@@ -140,8 +210,8 @@ $(function () {
                     break;
                 case 'getCroppedCanvas':
                     if (result) {
-                        // hide left div and make right div to centralize
-                        // Right Div to show Image to be applied filter
+                        // get active aspect ratio                        
+                        // hide cropper, enable canvas to applied filters
                         $('#getCroppingDiv').hide();
                         $('#getCanvasDiv').show().find('.croppedImgDiv').html(result);
                         // enable all fabric controls
@@ -154,9 +224,17 @@ $(function () {
                         var dataURL = result.toDataURL(uploadedImageType);
                         canvas = new fabric.Canvas('canvas');
                         fabric.Image.fromURL(dataURL, function (img) {
-                            if (img.width > 1200) {
-                                canvas.setWidth(1170).setHeight(660);
+                            // aspect ratio conditions
+                            if ($('.aspect_ratio.active').find(':radio').attr('id') == 'aspectRatio1' && img.width > 1280) {
+                                canvas.setWidth(1280).setHeight(720);
+                            } else if ($('.aspect_ratio.active').find(':radio').attr('id') == 'aspectRatio2' && img.width > 1280) {
+                                canvas.setWidth(1280).setHeight(960);
+                            } else if ($('.aspect_ratio.active').find(':radio').attr('id') == 'aspectRatio3' && img.width > 1280 ) {
+                                canvas.setWidth(1280).setHeight(1280);
+                            } else if($('.aspect_ratio.active').find(':radio').attr('id') == 'aspectRatio4' && img.height > 1280) {
+                                canvas.setWidth(720).setHeight(1280);
                             }
+                            
                             canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
                                 scaleX: canvas.width / img.width,
                                 scaleY: canvas.height / img.height
