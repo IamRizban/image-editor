@@ -10,7 +10,7 @@ $(function () {
 
     canvas.on({
         'object:selected': function () {
-            var filters = ['brightness', 'contrast', 'noise'];
+            var filters = ['brightness', 'contrast', 'noise', 'blur'];
             for (var i = 0; i < filters.length; i++) {
                 $(filters[i]) && ($(filters[i]).checked = !!canvas.getActiveObject().filters[i]);
             }
@@ -34,56 +34,59 @@ $(function () {
         }
     }
 
-    $('blackwhite').onclick = function () {
-        applyFilter(19, this.checked && new f.BlackWhite());
-    };
-    $('brightness').onclick = function () {
-        if (document.getElementById("brightness").checked) {
-            document.getElementById("brightness-value").style.display = 'block';
-        } else {
-            document.getElementById("brightness-value").style.display = 'none';
-        }
-        applyFilter(5, this.checked && new f.Brightness({
-            brightness: parseFloat($('brightness-value').value)
-        }));
-    };
-    $('brightness-value').oninput = function () {
-        applyFilterValue(5, 'brightness', parseFloat(this.value));
-    };
-    $('contrast').onclick = function () {
-        if (document.getElementById("contrast").checked) {
-            document.getElementById("contrast-value").style.display = 'block';
-        } else {
-            document.getElementById("contrast-value").style.display = 'none';
-        }
-        applyFilter(6, this.checked && new f.Contrast({
-            contrast: parseFloat($('contrast-value').value)
-        }));
-    };
-    $('contrast-value').oninput = function () {
-        applyFilterValue(6, 'contrast', parseFloat(this.value));
-    };
-    $('noise').onclick = function () {
-        if (document.getElementById("noise").checked) {
-            document.getElementById("noise-value").style.display = 'block';
-        } else {
-            document.getElementById("noise-value").style.display = 'none';
-        }
-        applyFilter(8, this.checked && new f.Noise({
-            noise: parseInt($('noise-value').value, 10)
-        }));
-    };
-    $('noise-value').oninput = function () {
-        applyFilterValue(8, 'noise', parseInt(this.value, 10));
-    };
+//    $('blackwhite').onclick = function () {
+//        applyFilter(19, this.checked && new f.BlackWhite());
+//    };
+//    $('brightness').onclick = function () {
+//        if (document.getElementById("brightness").checked) {
+//            document.getElementById("brightness-value").style.display = 'block';
+//        } else {
+//            document.getElementById("brightness-value").style.display = 'none';
+//        }
+//        applyFilter(5, this.checked && new f.Brightness({
+//            brightness: parseFloat($('brightness-value').value)
+//        }));
+//    };
+//    $('brightness-value').oninput = function () {
+//        applyFilterValue(5, 'brightness', parseFloat(this.value));
+//    };
+//    $('contrast').onclick = function () {
+//        if (document.getElementById("contrast").checked) {
+//            document.getElementById("contrast-value").style.display = 'block';
+//        } else {
+//            document.getElementById("contrast-value").style.display = 'none';
+//        }
+//        applyFilter(6, this.checked && new f.Contrast({
+//            contrast: parseFloat($('contrast-value').value)
+//        }));
+//    };
+//    $('contrast-value').oninput = function () {
+//        applyFilterValue(6, 'contrast', parseFloat(this.value));
+//    };
+//    $('noise').onclick = function () {
+//        if (document.getElementById("noise").checked) {
+//            document.getElementById("noise-value").style.display = 'block';
+//        } else {
+//            document.getElementById("noise-value").style.display = 'none';
+//        }
+//        applyFilter(8, this.checked && new f.Noise({
+//            noise: parseInt($('noise-value').value, 10)
+//        }));
+//    };
+//    $('noise-value').oninput = function () {
+//        applyFilterValue(8, 'noise', parseInt(this.value, 10));
+//    };
 });
 // save/download image
-$('#imgDownload').click(function () {
+$('#download').click(function () {
     if ($('#canvas').length) {
         canvas.discardActiveObject().renderAll();
-        $('#canvas').get(0).toBlob(function (blob) {
-            saveAs(blob, 'cropped.jpg');
-        });
+        var data = canvas.toDataURL("image/jpeg");
+        $('#download').attr('href', data);        
+        $('#download').attr('download', $('#download').data('imagename'));
+//        $('#canvas').get(0).toBlob(function (blob) {
+//            saveAs(blob, 'cropped.jpg');
+//        });
         // hide canvas div
         $('#getCanvasDiv').hide();
         // show cropper div

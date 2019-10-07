@@ -232,7 +232,6 @@ $(function () {
                     break;
                 case 'getCroppedCanvas':
                     if (result) {
-                        console.log(result);
                         // get active aspect ratio                        
                         // hide cropper, enable canvas to applied filters
                         $('#getCroppingDiv').hide();
@@ -242,15 +241,16 @@ $(function () {
                         $('.filtercontols').removeClass('disabled');
                         // disable all cropper controls
                         $('.croppercontols').addClass('disabled');
-                        // add download link to download button                        
-//                        download.download = uploadedImageName;
-                        $('#download').data('imagename', uploadedImageName);
-//                        download.href = result.toDataURL(uploadedImageType);
+                        // add download link to download button
+                        if (!download.disabled) {
+                            download.download = uploadedImageName;
+                            download.href = result.toDataURL(uploadedImageType);
+                        }
                         /** ==================== Start of enable fabric js code ============================== **/
                         $('canvas').attr('id', 'canvas');
                         var dataURL = result.toDataURL(uploadedImageType);
                         canvas = new fabric.Canvas('canvas');
-                        // get height & width of cropped image to check condition
+                        // get height & width of cropped image
                         $("body").append("<img style='display:none;' id='hiddenImage' src='" + dataURL + "' />");
                         // show loader
                         $("div#divLoading").addClass('show');

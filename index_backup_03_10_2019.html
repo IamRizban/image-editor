@@ -55,6 +55,18 @@
                 <div class="col-md-3">
                     <!-- Cropping & Filtration control Row -->
                     <div class="row docs-buttons" style="margin-top: 10px;">
+                        <!-- Upload Image controls -->
+                        <label class="btn btn-dark btn-upload" for="inputImage">
+                            <input type="file" class="sr-only" id="inputImage" name="file" accept=".jpg,.jpeg,.png,.gif,.bmp,.tiff">
+                            <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Upload Image">
+                                <span class="fa fa-upload"></span>
+                            </span>
+                        </label>
+                        <button type="button" class="btn btn-success" data-method="getCroppedCanvas" data-option="{ &quot;maxWidth&quot;: 4096, &quot;maxHeight&quot;: 4096 }">
+                            <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Crop">
+                                <span class="fa fa-crop"></span>
+                            </span>
+                        </button>
                         <div class="btn-group docs-toggles" data-toggle="buttons">
                             <label class="btn btn-dark croppercontols active aspect_ratio">
                                 <input type="radio" class="sr-only" id="aspectRatio1" name="aspectRatio" value="1.7777777777777777">
@@ -86,57 +98,7 @@
                                     Free
                                 </span>
                             </label>
-                        </div>                        
-                    </div>
-                    <!-- Set Cropper Width & Height -->
-                    <div class="row">
-                        <div class="input-group input-group-sm" style="">
-                            <span class="input-group-prepend">
-                                <label class="input-group-text" for="dataWidth"><b>Crop Width</b></label>
-                            </span>
-                            <input type="text" class="form-control" id="dataWidth" placeholder="width">
-                            <span class="input-group-append">
-                                <span class="input-group-text">PX</span>
-                            </span>
                         </div>
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-prepend">
-                                <label class="input-group-text" for="dataHeight"><b>Crop Height</b></label>
-                            </span>
-                            <input type="text" class="form-control" id="dataHeight" placeholder="height">
-                            <span class="input-group-append">
-                                <span class="input-group-text">PX</span>
-                            </span>
-                        </div>
-                    </div>
-                    <!-- Upload/Crop/Download/Delete Image controls -->
-                    <div class="row docs-buttons" style="margin-top: 10px;">
-                        <!-- Upload Image controls -->
-                        <label class="btn btn-dark btn-upload" for="inputImage" style="margin-right:5px;">
-                            <input type="file" class="sr-only" id="inputImage" name="file" accept=".jpg,.jpeg,.png,.gif,.bmp,.tiff">
-                            <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Upload Image">
-                                <span class="fa fa-upload"></span>
-                            </span>
-                        </label>
-                        <button type="button" class="btn btn-success" data-method="getCroppedCanvas" data-option="{ &quot;maxWidth&quot;: 4096, &quot;maxHeight&quot;: 4096 }" style="margin-right: 5px;">
-                            <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Crop">
-                                <span class="fa fa-crop"></span>
-                            </span>
-                        </button>
-                        <!-- Download Image controls -->
-                        <a class="btn btn-dark filtercontols disabled pull-right" id="download" data-imagename="" style="margin-right: 5px; color: #fff;">
-                            <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Download">
-                                <span class="fa fa-download"></span>
-                            </span>
-                        </a>
-                        <!-- Delete control -->
-                        <button type="button" class="btn btn-dark filtercontols disabled pull-right" id="imgDelete">
-                            <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Delete">
-                                <span class="fa fa-trash"></span>
-                            </span>
-                        </button>
-                    </div>
-                    <div class="row docs-buttons" style="margin-top: 10px">
                         <!-- Plus/Minus Image controls -->
                         <div class="btn-group">
                             <button type="button" class="btn btn-dark croppercontols" data-method="zoom" data-option="0.1" title="Zoom In">
@@ -193,19 +155,85 @@
                                 </span>
                             </button>
                         </div>
-                    </div>
-                    <!-- instruction row -->
-                    <div class="row docs-data" style="margin-top: 10px;">                        
+                        <!-- Black & White controls -->
+                        <label class="btn btn-dark filtercontols disabled">
+                            <input type="checkbox" id="blackwhite" class="fabricCheckboxes sr-only">
+                            <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Black & White">
+                                <span class="fa fa-btc"></span>
+                            </span>
+                        </label>
+                        <!-- Brightness controls -->
+                        <label class="btn btn-dark filtercontols disabled">
+                            <input type="checkbox" id="brightness" class="fabricCheckboxes sr-only">
+                            <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Brightness">
+                                <span class="fa fa-crosshairs"></span>
+                            </span>
+                        </label>
+                        <!-- Contrast control -->
+                        <label class="btn btn-dark filtercontols disabled">
+                            <input type="checkbox" id="contrast" class="fabricCheckboxes sr-only">
+                            <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Contrast">
+                                <span class="fa fa-adjust"></span>
+                            </span>
+                        </label>
+                        <!-- Sharpen control -->
+                        <label class="btn btn-dark filtercontols disabled">
+                            <input type="checkbox" id="noise" class="fabricCheckboxes sr-only">
+                            <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Sharpen">
+                                <span class="fa fa-sort-up"></span>
+                            </span>
+                        </label>                        
+                        <!-- Download Image controls -->
+                        <button type="button" class="btn btn-dark filtercontols disabled pull-right" id="imgDownload">
+                            <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Download">
+                                <span class="fa fa-download"></span>
+                            </span>
+                        </button>
+                        <!-- Delete control -->
+                        <button type="button" class="btn btn-dark filtercontols disabled pull-right" id="imgDelete">
+                            <span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="Delete">
+                                <span class="fa fa-trash"></span>
+                            </span>
+                        </button>
+                        <br><br><br>
+                        <input type="range" id="brightness-value" value="0.1" min="-1" max="1" step="0.003921" style="display:none;">
+                        <input type="range" id="contrast-value" value="0" min="-1" max="1" step="0.003921" style="display:none;">
+                        <input type="range" id="noise-value" value="100" min="0" max="1000" style="display:none;">
+                    </div>                    
+                    <div class="docs-data"> 
+                        <!-- Set Cropper Width & Height -->
+                        <div class="row">
+                            <div class="input-group input-group-sm" style="">
+                                <span class="input-group-prepend">
+                                    <label class="input-group-text" for="dataWidth"><b>Crop Width</b></label>
+                                </span>
+                                <input type="text" class="form-control" id="dataWidth" placeholder="width">
+                                <span class="input-group-append">
+                                    <span class="input-group-text">PX</span>
+                                </span>
+                            </div>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-prepend">
+                                    <label class="input-group-text" for="dataHeight"><b>Crop Height</b></label>
+                                </span>
+                                <input type="text" class="form-control" id="dataHeight" placeholder="height">
+                                <span class="input-group-append">
+                                    <span class="input-group-text">PX</span>
+                                </span>
+                            </div>
+                        </div>
                         <!-- Instruction of Use this tool -->
-                        <ul class="list-group">
-                            <li class="list-group-item active"><b>Instruction to use this tool</b></li>
-                            <li class="list-group-item list-group-item-secondary"><b>Step 1:</b> Upload Image</li>
-                            <li class="list-group-item list-group-item-secondary"><b>Step 2:</b> Set the Frame</li>
-                            <li class="list-group-item list-group-item-secondary"><b>Step 3:</b> Resize using Mouse or Text Field</li>
-                            <li class="list-group-item list-group-item-secondary"><b>Step 4:</b> Click on <b>Crop</b> Button</li>
-                            <li class="list-group-item list-group-item-secondary"><b>Step 5:</b> Apply filters (If required)</li>
-                            <li class="list-group-item list-group-item-secondary"><b>Step 6:</b> Download Image</li>
-                        </ul>
+                        <div class="row" style="margin-top: 20px;">
+                            <ul class="list-group">
+                                <li class="list-group-item active"><b>Instruction to use this tool</b></li>
+                                <li class="list-group-item list-group-item-secondary"><b>Step 1:</b> Upload Image</li>
+                                <li class="list-group-item list-group-item-secondary"><b>Step 2:</b> Set the Frame</li>
+                                <li class="list-group-item list-group-item-secondary"><b>Step 3:</b> Resize using Mouse or Text Field</li>
+                                <li class="list-group-item list-group-item-secondary"><b>Step 4:</b> Click on <b>Crop</b> Button</li>
+                                <li class="list-group-item list-group-item-secondary"><b>Step 5:</b> Apply filters (If required)</li>
+                                <li class="list-group-item list-group-item-secondary"><b>Step 6:</b> Download Image</li>
+                            </ul>
+                        </div>    
                     </div>
                 </div>
             </div>            
@@ -235,8 +263,8 @@
         <script src="js/cropper.js"></script>
         <script src="js/jquery-cropper.js"></script>
         <script src="js/fabric.js"></script>
-<!--        <script src="js/FileSaver.min.js"></script>
-        <script src="js/canvas-toBlob.js"></script>-->
+        <script src="js/FileSaver.min.js"></script>
+        <script src="js/canvas-toBlob.js"></script>
         <script src="js/exif-js.js"></script>
         <script src="js/main.js"></script>
         <script src="js/custom.js"></script>
